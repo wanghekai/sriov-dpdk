@@ -3,8 +3,7 @@
 DPDK In Guest/SR-IOV Host/SR-IOV
 
 # OVERVIEW
-
-    This project is to create a sriov dpdk host and guest automate case for customer on RHEL7(Extras) and RHEL8(Appstream)
+This project is to create a sriov dpdk host and guest automate case for customer on RHEL7(Extras) and RHEL8(Appstream)
 
 # TOPO DESCRIPTION
 
