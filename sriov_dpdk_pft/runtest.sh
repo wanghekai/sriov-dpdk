@@ -457,7 +457,8 @@ guest_start_testpmd()
     else
         hw_vlan_flag="--disable-hw-vlan"
     fi
-    VMSH_PROMPT1="testpmd>" VMSH_NORESULT=1 VMSH_NOLOGOUT=1 vmsh run_cmd guest30032 "testpmd -l 0,1,2 --legacy-mem --socket-mem 1024 -n 4 -- --forward-mode=io --port-topology=chained ${hw_vlan_flag} --disable-rss -i --rxq=${q_num} --txq=${q_num} --rxd=256 --txd=256 --nb-cores=2 --max-pkt-len=9600 --auto-start"
+    #VMSH_PROMPT1="testpmd>" VMSH_NORESULT=1 VMSH_NOLOGOUT=1 vmsh run_cmd guest30032 "testpmd -l 0,1,2 --legacy-mem --socket-mem 1024 -n 4 -- --forward-mode=io --port-topology=chained ${hw_vlan_flag} --disable-rss -i --rxq=${q_num} --txq=${q_num} --rxd=256 --txd=256 --nb-cores=2 --max-pkt-len=9600 --auto-start"
+	VMSH_PROMPT1="testpmd>" VMSH_NORESULT=1 VMSH_NOLOGOUT=1 vmsh run_cmd guest30032 "testpmd -l 0,1,2 --legacy-mem --socket-mem 1024 -n 4 -- --forward-mode=io  ${hw_vlan_flag} --disable-rss -i --rxq=${q_num} --txq=${q_num} --rxd=256 --txd=256 --nb-cores=2  --auto-start"
 }
 
 update_ssh_trust()

@@ -58,7 +58,7 @@ class TrexTest(object):
         return self.client
     
 
-    def build_test_stream_with_dst_mac(self):
+    def build_test_stream_basic(self):
         l2 = Ether()
         if self.vlan_flag == True:
             self.base_pkt = l2/Dot1Q(vlan=3)/IP(src="192.168.100.10",dst="192.168.100.20")/UDP(dport=12, sport=1025)
@@ -77,14 +77,14 @@ class TrexTest(object):
 
     def build_test_stream(self):
         self.all_stream = []
-        temp_stream = self.build_test_stream_with_dst_mac()
+        temp_stream = self.build_test_stream_basic()
         self.all_stream.append(temp_stream)
         self.streams = STLProfile(streams=self.all_stream).get_streams()
         return self.streams
 
     def test_stream_create(self,src_mac,dst_mac):
         l2 = Ether(dst=dst_mac,src=src_mac)
-        pad = max(0, 64 - len(l2)) * 'x'
+        pad = max(0, self.pkt_size - len(l2)) * 'x'
         return STLStream(isg=10.0,
                 packet=STLPktBuilder(pkt=l2 / pad),
                 #flow_stats=STLFlowStats(pg_id=1),
@@ -301,7 +301,7 @@ class TrexTest(object):
     def start_all_test(self):
         self.start_trex_server()
         import time
-        time.sleep(5)
+        time.sleep(60)
         self.create_stl_client()
         self.build_test_stream()
         self.start_test()
