@@ -10,14 +10,18 @@ This project is to create a sriov dpdk host and guest automate case for customer
     There must be two hosts as DUT devices ,one as server and another as client
     There is a switch between server and client as describe below
 
-    SERVER <------> Tor switch <--------> CLIENT
+    SERVER <--------------> CLIENT
 
 # REQUIREMENT
+    Customer need subscriber rhel repo and have a root user permission 
+    Please refer https://github.com/ctrautma/RHEL_NIC_QUALIFICATION/blob/master/README.md
+    for how to subscribe and install package 
 
 # Hardware
-    Two linux server with interfaces that support sriov and dpdk feature
+    Two interfaces that support sriov and dpdk feature and at least with two ports on each linux server  
 # Software
     RHEL7 OR RHEL8 SYSTEM with extras fast data path repo or Appstrem for rhel8
+    dpdk and dpdk-tools packeage must installed .
 
 # SETUP 
 1. INSTALL SYSTEM ON EACH SERVER AND REGISTER YOUR CUSTOMER ACCOUNTS
