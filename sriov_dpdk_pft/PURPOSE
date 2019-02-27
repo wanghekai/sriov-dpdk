@@ -1,0 +1,23 @@
+SRIOV DPDK PFT TEST PROJECT
+
+install required packages
+         wget
+         git
+         gcc
+         bridge-utils
+         virt-install
+         libvirt
+         qemu-kvm/qemu-kvm-rhev
+         bc
+         lsof
+         nmap-ncat
+         expect
+         tcpdump
+         beakerlib
+             install beakerlib
+                 git clone https://github.com/beakerlib/beakerlib
+                 pushd beakerlib
+                 make
+                 make install
+                 popd
+
