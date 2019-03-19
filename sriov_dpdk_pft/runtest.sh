@@ -432,9 +432,11 @@ guest_bind_dpdk()
 
 
 #{modprobe  vfio enable_unsafe_noiommu_mode=1}
-#{rpm -ivh /root/dpdkrpms/$GUEST_DPDK_VERSION/dpdk*.rpm}
 guest_start_testpmd()
 {
+	local vf1_bus=$1
+	local vf2_bus=$2
+	local pkt_size=$3
     local cmd=(
         {/root/one_gig_hugepages.sh 1}
 		{rpm -ivh  /root/$DPDK_VERSION/dpdk*.rpm}
@@ -443,8 +445,8 @@ guest_start_testpmd()
         {modprobe  vfio }
         {modprobe vfio-pci}
         {ip link set eth1 down}
-        {dpdk-devbind -b vfio-pci $1}
-		{dpdk-devbind -b vfio-pci $2}
+        {dpdk-devbind -b vfio-pci $vf1_bus}
+		{dpdk-devbind -b vfio-pci $vf2_bus}
         {dpdk-devbind --status}
             )
     vmsh cmd_set guest30032 "${cmd[*]}"
@@ -458,8 +460,9 @@ guest_start_testpmd()
         hw_vlan_flag="--disable-hw-vlan"
     fi
     #VMSH_PROMPT1="testpmd>" VMSH_NORESULT=1 VMSH_NOLOGOUT=1 vmsh run_cmd guest30032 "testpmd -l 0,1,2 --legacy-mem --socket-mem 1024 -n 4 -- --forward-mode=io --port-topology=chained ${hw_vlan_flag} --disable-rss -i --rxq=${q_num} --txq=${q_num} --rxd=256 --txd=256 --nb-cores=2 --max-pkt-len=9600 --auto-start"
-	VMSH_PROMPT1="testpmd>" VMSH_NORESULT=1 VMSH_NOLOGOUT=1 vmsh run_cmd guest30032 "testpmd -l 0,1,2 --legacy-mem --socket-mem 1024 -n 4 -- --forward-mode=io  ${hw_vlan_flag} --disable-rss -i --rxq=${q_num} --txq=${q_num} --rxd=256 --txd=256 --nb-cores=2  --auto-start"
+	VMSH_PROMPT1="testpmd>" VMSH_NORESULT=1 VMSH_NOLOGOUT=1 vmsh run_cmd guest30032 "testpmd -l 0,1,2 --legacy-mem --socket-mem 1024 -n 4 -- --forward-mode=io  ${hw_vlan_flag} --disable-rss -i --rxq=${q_num} --txq=${q_num} --rxd=256 --txd=256 --nb-cores=2  --max-pkt-len=${pkt_size} --auto-start"
 }
+
 
 update_ssh_trust()
 {
@@ -665,6 +668,7 @@ host_start_testpmd()
 	forward_mode=$1
 	local bus1=$2
 	local bus2=$3
+	local pkt_size=$4
 
 	local q_num=1
 	local dpdk_ver=`basename $DPDK_URL | awk -F '-' '{print $2}' | tr -d '.'`
@@ -677,6 +681,11 @@ host_start_testpmd()
 	fi
 	pkill testpmd
 	sleep 10
+
+	if [[ $pkt_size -le 1500 ]]
+	then
+		pkt_size=1500
+	fi
 	# local socket_mem_info=""
 	# numa_num=`lscpu | grep 'NUMA node(s)' | awk  '{print $NF}'`
 	# for i in `seq $numa_num`
@@ -695,6 +704,7 @@ host_start_testpmd()
 	--rxd=256 \
 	--txd=256 \
 	--nb-cores=2 \
+	--max-pkt-len=${pkt_size} \
 	--auto-start &
 
 	sleep 20
@@ -780,7 +790,7 @@ sriov_test_testpmd_loopback()
 
 		sync_wait client CLIENT_TREX_STARTED
 		#start testpmd with dpdk nic
-		host_start_testpmd "io" $SERVER_NIC1_BUS $SERVER_NIC2_BUS
+		host_start_testpmd "io" $SERVER_NIC1_BUS $SERVER_NIC2_BUS 64
 
 		bonding_test_trex 64 0 "$SERVER_NIC1_MAC $SERVER_NIC2_MAC"
 
@@ -823,7 +833,7 @@ sriov_test_pf_remote()
 		sync_wait client CLIENT_TREX_STARTED
 
 		#start testpmd with dpdk nic
-		host_start_testpmd "io" $SERVER_NIC1_BUS $SERVER_NIC2_BUS
+		host_start_testpmd "io" $SERVER_NIC1_BUS $SERVER_NIC2_BUS $pkt_size
 
 		bonding_test_trex $pkt_size $vlan_flag "$SERVER_NIC1_MAC $SERVER_NIC2_MAC"
 
@@ -922,7 +932,7 @@ sriov_test_vf_remote()
 		sync_wait client CLIENT_TREX_STARTED
 
 		#start testpmd with dpdk nic
-		host_start_testpmd "io" $vf1_bus $vf2_bus 
+		host_start_testpmd "io" $vf1_bus $vf2_bus $pkt_size
 
 
 		bonding_test_trex $pkt_size $vlan_flag "$vf1_mac $vf2_mac"
@@ -968,6 +978,7 @@ sriov_test_vmvf_remote()
 		if i_am_server;then
 		#set link up
 		server_host_link_up $pkt_size
+
 		vcpupin_in_xml $SERVER_NUMA $SERVER_VCPUS guest.xml g1.xml server
         start_guest
         configure_guest
@@ -1023,7 +1034,7 @@ sriov_test_vmvf_remote()
 		vf1_mac=`python tools.py get_mac_address_of_vm_hostdev $temp_xml_file 0`
 		vf2_mac=`python tools.py get_mac_address_of_vm_hostdev $temp_xml_file 1`
 
-		guest_start_testpmd $vf1_bus $vf2_bus
+		guest_start_testpmd $vf1_bus $vf2_bus $pkt_size
 
         sync_wait client CLIENT_TREX_STARTED
 

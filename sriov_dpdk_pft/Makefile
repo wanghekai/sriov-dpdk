@@ -45,6 +45,7 @@ FILES=$(METADATA) \
 	sriov.py  \
 	tools.py  \
 	trex_sport.py \
+	rh_sriov_test_main.sh \
 	vmsh
 
 .PHONY: all install download clean

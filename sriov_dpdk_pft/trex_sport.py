@@ -27,19 +27,18 @@
 
 import sys
 import getopt
+
 sys.path.append('/opt/trex/current/automation/trex_control_plane/stl/examples')
 sys.path.append('./v2.48/automation/automation/trex_control_plane/interactive/trex/examples')
 sys.path.append('./v2.48/automation/trex_control_plane/interactive/trex/examples/stl')
-
-# import trex_client.interactive.trex.examples.stl.stl_path
-# from trex_client.interactive.trex_stl_lib.api *
-# from trex_client.interactive.trex.stl.api import *
-
 
 import stl_path
 from trex_stl_lib.api import *
 import json
 import argparse
+
+#import trex
+#import trex_stl_lib
 
 
 class TrexTest(object):
@@ -260,6 +259,7 @@ class TrexTest(object):
         print("x"*100)
 
     def start_trex_server(self):
+        #trex.CTRexClient
         #import trex_client.stf.trex_stf_lib
         trex = trex_client.CTRexClient(self.trex_host)
         trex.force_kill(confirm=False)
