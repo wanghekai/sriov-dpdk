@@ -75,17 +75,39 @@ install_package()
 	if (( $SYSTEM_VERSION_ID < 80 ))
     then
 		add_repo_rhel7
-		yum install -y qemu-img-rhev qemu-kvm-common-rhev qemu-kvm-rhev qemu-kvm-tools-rhev
+		yum -y install qemu-img-rhev 
+		yum -y install qemu-kvm-common-rhev
+		yum -y install qemu-kvm-rhev 
+		yum -y install qemu-kvm-tools-rhev
 	else
-		yum install -y qemu-img qemu-kvm platform-python-devel
+		yum install -y qemu-img 
+		yum -y install qemu-kvm 
+		yum -y install platform-python-devel
     fi
 
-    yum -y install lrzip tcpdump ethtool yum-utils scl-utils libnl3-devel
-	yum -y install python36 python36-devel python36-pip python36-tkinter
-	yum install -y wget nano ftp yum-utils git tuna openssl sysstat
+    yum -y install lrzip 
+	yum -y install tcpdump 
+	yum -y install python36
+	yum -y install ethtool 
+	yum -y install yum-utils 
+	yum -y install scl-utils 
+	yum -y install libnl3-devel
+	yum -y install python36-devel 
+	yum -y install python36-pip
+	yum -y install yum install -y wget 
+	yum -y install nano 
+	yum -y install ftp 
+	yum -y install git 
+	yum -y install tuna 
+	yum -y install openssl 
+	yum -y install sysstat
 	yum -y install tuned-profiles-cpu-partitioning
 	#install libvirt
-	yum install -y libvirt libvirt-devel virt-install virt-manager virt-viewer
+	yum install -y libvirt 
+	yum -y install libvirt-devel 
+	yum -y install virt-install 
+	yum -y install virt-manager 
+	yum -y install virt-viewer
 	#for qemu bug that can not start qemu
 	if (( $SYSTEM_VERSION_ID < 80 ))
 	then
