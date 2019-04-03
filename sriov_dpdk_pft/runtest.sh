@@ -145,6 +145,14 @@ install_package()
 		libvirt-devel
 		libvirt-python
 		python3-lxml
+		emacs 
+		gcc 
+		git 
+		lshw 
+		pciutils 
+		python-devel 
+		python-setuptools 
+		python-pip
 	)
 
 	for pack in "${all_pack[@]}"
@@ -612,8 +620,7 @@ install_trex_and_start()
 
     install_dpdk
     install_driverctl
-    yum -y install emacs gcc git lshw pciutils python-devel python-setuptools python-pip tmux tuned-profiles-cpu-partitioning wget
-
+ 
     trex_name=`basename ${trex_url}`
     trex_dir=`basename -s .tar.gz ${trex_url}`
     [ -d ${trex_dir} ] || wget ${trex_url} > /dev/null 2>&1
