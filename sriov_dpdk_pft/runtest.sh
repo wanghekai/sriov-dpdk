@@ -63,7 +63,7 @@ then
 		check_install $pack
 	done
 	#install beakerlib
-	if ! [[ -f source /usr/share/beakerlib/beakerlib.sh ]]
+	if ! [[ -f /usr/share/beakerlib/beakerlib.sh ]]
 	then
 		git clone https://github.com/beakerlib/beakerlib
 		pushd beakerlib
