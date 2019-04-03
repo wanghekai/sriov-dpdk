@@ -37,9 +37,9 @@ SYSTEM_VERSION_ID=`echo $VERSION_ID | tr -d '.'`
 check_install()
 {
 	local pkg_name=$1
-	echo "***************************************\n"
+	echo "***************************************"
 	rpm -q $pkg_name || yum -y install $pkg_name
-	echo "***************************************\n"
+	echo "***************************************"
 	return 0
 }
 
@@ -50,7 +50,7 @@ then
 		wget
 		git
 		gcc
-		bridge-utils
+		
 		bc
 		lsof
 		nmap-ncat
@@ -61,6 +61,12 @@ then
 	do
 		check_install $pack
 	done
+	
+	if (( $SYSTEM_VERSION_ID < 80 ))
+    then
+		check_install bridge-utils
+	fi
+
 	#install beakerlib
 	if ! [[ -f /usr/share/beakerlib/beakerlib.sh ]]
 	then
