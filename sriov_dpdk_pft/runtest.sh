@@ -274,6 +274,7 @@ install_driverctl()
 
 enable_dpdk()
 {
+	pushd $CASE_PATH
     install_dpdk
     install_driverctl
     local nic1_mac=$1
@@ -291,7 +292,7 @@ enable_dpdk()
         rlLog "************************************************"
         rlLog "This Driver is Mallenox , So just return 0"
         rlLog "************************************************"
-        return 0
+        #return 0
     fi
 
     if [[ -f /usr/share/dpdk/usertools/dpdk-devbind.py ]]; then
@@ -307,6 +308,7 @@ enable_dpdk()
         sleep 3
         driverctl -v list-devices|grep vfio-pci
     fi
+	popd
 }
 
 cpu_list_on_numa()
@@ -601,6 +603,7 @@ install_trex_and_start()
 
     systemctl enable tuned
     systemctl start tuned
+	
 
     enable_dpdk $nic1_mac $nic2_mac
     ./trex_daemon_server restart
