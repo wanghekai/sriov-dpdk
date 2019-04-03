@@ -135,7 +135,7 @@ install_package()
 	yum -y install virt-manager 
 	yum -y install virt-viewer
 	#for qemu bug that can not start qemu
-	if (( $SYSTEM_VERSION_ID < 80 ))
+	if (( $SYSTEM_VERSION_ID <= 80 ))
 	then
 		echo -e "group = 'hugetlbfs'" >> /etc/libvirt/qemu.conf
 	fi
