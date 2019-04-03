@@ -16,6 +16,32 @@ This project is to create a sriov dpdk host and guest automate case for customer
     Customer need subscriber rhel repo and have a root user permission 
     Please refer https://github.com/ctrautma/RHEL_NIC_QUALIFICATION/blob/master/README.md
     for how to subscribe and install package 
+    Packages Need First installed
+    wget
+    git
+    gcc
+    bridge-utils
+    virt-install
+    libvirt
+    qemu-kvm/qemu-kvm-rhev
+    bc
+    lsof
+    nmap-ncat
+    expect
+    tcpdump
+    iperf (not iperf3)
+    netperf
+    beakerlib
+
+    How to install beakerlib 
+    """
+    git clone https://github.com/beakerlib/beakerlib
+    pushd beakerlib
+    make
+    make install
+    popd
+    """
+
 
 # Hardware
     Two interfaces that support sriov and dpdk feature and at least with two ports on each linux server  
@@ -39,6 +65,8 @@ Just need config environment follow the readme and run the setup shell for dpdk 
 6. SRIOV DPDK TESTPMD TEST IN VM 
 7. MIGRATION TEST FOR SRIOV AND DPDK 
 8. ETC ..
+
+
 
 DETAIL TEST CASE LIST 
 NEED FIX ME 

@@ -37,7 +37,15 @@ SYSTEM_VERSION_ID=`echo $VERSION_ID | tr -d '.'`
 if [[ $CUSTOMER_PFT_TEST == "yes" ]]
 then
 	CASE_PATH=${CASE_PATH:-"$(dirname $(readlink -f $0))"}
-	yum -y install wget git gcc bridge-utils bc lsof nmap-ncat expect tcpdump beakerlib
+	yum -y install wget 
+	yum -y install git 
+	yum -y install gcc 
+	yum -y install bridge-utils 
+	yum -y install bc 
+	yum -y install lsof 
+	yum -y install nmap-ncat 
+	yum -y install expect 
+	yum -y install tcpdump
 	#install beakerlib
 	git clone https://github.com/beakerlib/beakerlib
 	pushd beakerlib
