@@ -37,17 +37,16 @@ SYSTEM_VERSION_ID=`echo $VERSION_ID | tr -d '.'`
 check_install()
 {
 	local pkg_name=$1
-	echo "***************************************"
-	echo "Check package and install if not installed "
+	echo "***************************************\n"
 	rpm -q $pkg_name || yum -y install $pkg_name
-	echo "***************************************"
+	echo "***************************************\n"
 	return 0
 }
 
 if [[ $CUSTOMER_PFT_TEST == "yes" ]]
 then
 	CASE_PATH=${CASE_PATH:-"$(dirname $(readlink -f $0))"}
-	all_pack=(
+	need_all_packs=(
 		wget
 		git
 		gcc
@@ -58,7 +57,7 @@ then
 		tcpdump
 		expect
 	)
-	for pack in "${all_pack[@]}"
+	for pack in "${need_all_packs[@]}"
 	do
 		check_install $pack
 	done
@@ -111,29 +110,42 @@ install_package()
 		yum -y install platform-python-devel
     fi
 
-    yum -y install lrzip 
-	yum -y install tcpdump 
-	yum -y install python36
-	yum -y install ethtool 
-	yum -y install yum-utils 
-	yum -y install scl-utils 
-	yum -y install libnl3-devel
-	yum -y install python36-devel 
-	yum -y install python36-pip
-	yum -y install yum install -y wget 
-	yum -y install nano 
-	yum -y install ftp 
-	yum -y install git 
-	yum -y install tuna 
-	yum -y install openssl 
-	yum -y install sysstat
-	yum -y install tuned-profiles-cpu-partitioning
-	#install libvirt
-	yum install -y libvirt 
-	yum -y install libvirt-devel 
-	yum -y install virt-install 
-	yum -y install virt-manager 
-	yum -y install virt-viewer
+	local all_pack=(
+		lrzip 
+		tcpdump 
+		python36
+		ethtool 
+		yum-utils 
+		scl-utils 
+		libnl3-devel
+		python36-devel
+		wget 
+		nano 
+		ftp 
+		git 
+		tuna 
+		openssl 
+		sysstat
+		tuned-profiles-cpu-partitioning
+		libvirt 
+		libvirt-devel 
+		virt-install 
+		virt-manager 
+		virt-viewer
+		python
+		czmq-devel
+		libguestfs-tools
+		ethtool
+		libvirt-devel
+		libvirt-python
+		python3-lxml
+	)
+
+	for pack in "${all_pack[@]}"
+	do
+		check_install $pack
+	done
+
 	#for qemu bug that can not start qemu
 	if (( $SYSTEM_VERSION_ID <= 80 ))
 	then
@@ -141,14 +153,11 @@ install_package()
 	fi
 	
 	systemctl restart libvirtd
-	#install python
-	yum install -y python
-	#install zmq for trex 
-	yum install -y czmq-devel
-	#here for virt-copy-in
-	yum install -y libguestfs-tools
-    #add ethtools
-    yum -y install ethtool
+	systemctl start virtlogd.socket
+	
+	# work around for failure of virt-install
+	chmod 666 /dev/kvm
+
 }
 
 #get nic name from mac address
@@ -177,22 +186,16 @@ init_python_env()
 	else
 		python36 -m venv ${CASE_PATH}/venv
 	fi
+
     source venv/bin/activate
 	export PYTHONPATH=${CASE_PATH}/venv/lib64/python3.6/site-packages/
     pip install --upgrade pip
-    if ! pip list --format=columns | grep fire;then
-            pip install fire
-    fi
-    if ! pip list --format=columns | grep psutil;then
-            pip install psutil
-    fi
-    if ! pip list --format=columns | grep paramiko;then
-            pip install paramiko
-    fi
+
+	pip install fire
+	pip install psutil
+	pip install paramiko
     pip install xmlrunner
 	pip install netifaces
-	yum -y install libvirt-devel
-	pip install libvirt-python
 	pip install argparse
 	pip install plumbum
 	pip install ethtool
@@ -390,10 +393,10 @@ start_guest()
 {
     systemctl list-units --state=stop --type=service | grep libvirtd || systemctl restart libvirtd
 
-	local image_name=`basename ${IMG_GUEST}`
+	local image_name=`basename ${IMAGE_GUEST}`
 	
 	[[ -f /root/rhel.qcow2 ]] && rm -f /root/rhel.qcow2
-	wget -P /root/ ${IMG_GUEST} > /dev/null 2>&1
+	wget -P /root/ ${IMAGE_GUEST} > /dev/null 2>&1
 	pushd /root/
 		mv $image_name rhel.qcow2
 	popd
@@ -654,27 +657,6 @@ clear_trex_and_free_hugepage()
     return 0
 }
 
-# install needed packages
-sriov_install()
-{
-	yum -y install virt-install
-	yum -y install libvirt
-	if (($rhel_version >= 8)); then
-		yum install -y python3-lxml.x86_64
-	fi
-
-	rpm -qa | grep qemu-kvm >/dev/null || yum -y install qemu-kvm
-
-	if (($rhel_version < 7)); then
-		service libvirtd restart
-	else
-		systemctl restart libvirtd
-		systemctl start virtlogd.socket
-	fi
-
-	# work around for failure of virt-install
-	chmod 666 /dev/kvm
-}
 
 # set up env
 sriov_setup()
