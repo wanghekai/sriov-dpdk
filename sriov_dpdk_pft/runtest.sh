@@ -34,24 +34,43 @@ PACKAGE="kernel"
 source /etc/os-release || exit 1
 SYSTEM_VERSION_ID=`echo $VERSION_ID | tr -d '.'`
 
+check_install()
+{
+	local pkg_name=$1
+	echo "***************************************"
+	echo "Check package and install if not installed "
+	rpm -q $pkg_name || yum -y install $pkg_name
+	echo "***************************************"
+	return 0
+}
+
 if [[ $CUSTOMER_PFT_TEST == "yes" ]]
 then
 	CASE_PATH=${CASE_PATH:-"$(dirname $(readlink -f $0))"}
-	yum -y install wget 
-	yum -y install git 
-	yum -y install gcc 
-	yum -y install bridge-utils 
-	yum -y install bc 
-	yum -y install lsof 
-	yum -y install nmap-ncat 
-	yum -y install expect 
-	yum -y install tcpdump
+	all_pack=(
+		wget
+		git
+		gcc
+		bridge-utils
+		bc
+		lsof
+		nmap-ncat
+		tcpdump
+		expect
+	)
+	for pack in "${all_pack[@]}"
+	do
+		check_install $pack
+	done
 	#install beakerlib
-	git clone https://github.com/beakerlib/beakerlib
-	pushd beakerlib
-	make
-	make install
-	popd
+	if ! [[ -f source /usr/share/beakerlib/beakerlib.sh ]]
+	then
+		git clone https://github.com/beakerlib/beakerlib
+		pushd beakerlib
+		make
+		make install
+		popd
+	fi
 else
 	CASE_PATH=${CASE_PATH:-"/mnt/tests//kernel/networking/vnic/sriov_dpdk_pft"}
 fi
@@ -59,7 +78,6 @@ fi
 source env.sh || exit 1
 source lib/lib_nc_sync.sh || exit 1
 source lib/lib_utils.sh || exit 1
-source /usr/share/beakerlib/beakerlib.sh || exit 1
 source /usr/share/beakerlib/beakerlib.sh || exit 1
 
 add_repo_rhel7()
