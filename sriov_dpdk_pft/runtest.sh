@@ -1140,6 +1140,7 @@ if [[ -f /tmp/sriov_dpdk_pft ]]
 then
     rlRun "cat /proc/cmdline"
     rlRun init_python_env
+	rlRun clear_env
     rlRun init_test_env
 	rlRun init_spec_driver_config
 fi
