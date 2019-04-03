@@ -31,6 +31,9 @@ import getopt
 sys.path.append('/opt/trex/current/automation/trex_control_plane/stl/examples')
 sys.path.append('./v2.48/automation/automation/trex_control_plane/interactive/trex/examples')
 sys.path.append('./v2.48/automation/trex_control_plane/interactive/trex/examples/stl')
+sys.path.append('./v2.49/automation/automation/trex_control_plane/interactive/trex/examples')
+sys.path.append('./v2.49/automation/trex_control_plane/interactive/trex/examples/stl')
+
 
 import stl_path
 from trex_stl_lib.api import *
@@ -309,6 +312,8 @@ class TrexTest(object):
 
 if __name__ == "__main__":
     sys.path.append('./v2.48/automation/trex_control_plane/stf/trex_stf_lib/')
+    sys.path.append('./v2.49/automation/trex_control_plane/stf/trex_stf_lib/')
+
     import trex_client
     import trex_status
 

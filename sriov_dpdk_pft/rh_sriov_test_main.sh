@@ -43,40 +43,40 @@ CASE_PATH=${CASE_PATH:-"$(dirname $(readlink -f $0))"}
 #
 
 
-CUSTOMER_PFT_TEST=${CUSTOMER_PFT_TEST:-"yes"}
+CUSTOMER_PFT_TEST="yes"
 
 #HOST NAME CONFIG , INPUT YOUR HOSTNAME FOR TEST
 #SERVERS AS DUT SERVER
 #CLIENTS AS TREX TRAFFIC GENERATOR
-SERVERS=${SERVERS:"dell-per730-54.rhts.eng.pek2.redhat.com"}
-CLIENTS=${CLIENTS:"dell-per730-18.rhts.eng.pek2.redhat.com"}
+SERVERS="dell-per730-54.rhts.eng.pek2.redhat.com"
+CLIENTS="dell-per730-18.rhts.eng.pek2.redhat.com"
 
 #CONFIG THE MAC ADDRESS OF INTERFACE BY TESTED
-SERVER_NIC1_MAC=${SERVER_NIC1_MAC:'b4:96:91:14:b0:14'}
-SERVER_NIC2_MAC=${SERVER_NIC2_MAC:'b4:96:91:14:b0:16'}
-CLIENT_NIC1_MAC=${CLIENT_NIC1_MAC'90:e2:ba:29:bf:14'}
-CLIENT_NIC2_MAC=${CLIENT_NIC2_MAC'90:e2:ba:29:bf:15'}
+SERVER_NIC1_MAC='b4:96:91:14:b0:14'
+SERVER_NIC2_MAC='b4:96:91:14:b0:16'
+CLIENT_NIC1_MAC='90:e2:ba:29:bf:14'
+CLIENT_NIC2_MAC='90:e2:ba:29:bf:15'
 
 #CONFIG DUT SERVER NIC DRIVER
-NIC_DRIVER=${NIC_DRIVER:-"ixgbe"}
+NIC_DRIVER="ixgbe"
 #CONFIG RHEL VERSION 
-SYSTEM_VERSION=${SYSTEM_VERSION:"RHEL-8.0.0-20190129.1"}
+SYSTEM_VERSION="RHEL-8.0.0-20190129.1"
 
-TREX_SERVER_IP=${TREX_SERVER_IP:$CLIENTS}
+TREX_SERVER_IP=$CLIENTS
 #CONFIG YOUR TREX HOST PASSWORD
-TREX_SERVER_PASSWORD=${TREX_SERVER_PASSWORD:QwAo2U6GRxyNPKiZaOCx}
+TREX_SERVER_PASSWORD='QwAo2U6GRxyNPKiZaOCx'
 
 #TREX TAR PACKAGE 
 #HERE IS OFFICAL URL LINK https://trex-tgn.cisco.com/trex/release/
-TREX_URL=${TREX_URL:'http://netqe-bj.usersys.redhat.com/share/wanghekai/v2.48.tar.gz'}
+TREX_URL='http://netqe-bj.usersys.redhat.com/share/wanghekai/v2.49.tar.gz'
 #GUEST IMAGE FILE
-IMAGE_GUEST=${IMAGE_GUEST:"http://netqe-bj.usersys.redhat.com/share/tli/vsperf_img/rhel${SYSTEM_VERSION:5:3}-vsperf-1Q-viommu.qcow2"}
+IMAGE_GUEST="http://netqe-bj.usersys.redhat.com/share/tli/vsperf_img/rhel${SYSTEM_VERSION:5:3}-vsperf-1Q-viommu.qcow2"
 
 
-DRIVERCTL_URL=${DRIVERCTL_URL:"http://download-node-02.eng.bos.redhat.com/brewroot/packages/driverctl/0.101/1.el8/noarch/driverctl-0.101-1.el8.noarch.rpm"}
-DPDK_URL=${DPDK_URL:"http://download.eng.bos.redhat.com/brewroot/packages/dpdk/18.11/2.el8/x86_64/dpdk-18.11-2.el8.x86_64.rpm"}
-DPDK_TOOL_URL=${DPDK_TOOL_URL:"http://download.eng.bos.redhat.com/brewroot/packages/dpdk/18.11/2.el8/x86_64/dpdk-tools-18.11-2.el8.x86_64.rpm"}
-DPDK_VERSION=${DPDK_VERSION:18.11-2}
+DRIVERCTL_URL="http://download-node-02.eng.bos.redhat.com/brewroot/packages/driverctl/0.101/1.el8/noarch/driverctl-0.101-1.el8.noarch.rpm"
+DPDK_URL="http://download.eng.bos.redhat.com/brewroot/packages/dpdk/18.11/2.el8/x86_64/dpdk-18.11-2.el8.x86_64.rpm"
+DPDK_TOOL_URL="http://download.eng.bos.redhat.com/brewroot/packages/dpdk/18.11/2.el8/x86_64/dpdk-tools-18.11-2.el8.x86_64.rpm"
+DPDK_VERSION=18.11-2
 
 ###############################################################
 # NO NEED TO CHANGE BELOW THIS LINE
@@ -88,6 +88,7 @@ export PATH=$PATH:$CASE_PATH
 
 time_stamp=$(date +%Y-%m-%d-%T)
 NIC_LOG_FOLDER="/root/RHEL_NIC_QUAL_LOGS/${time_stamp}"
+mkdir -p ${NIC_LOG_FOLDER}
 
 if hostname | grep $CLIENTS &>/dev/null
 then
@@ -96,6 +97,9 @@ else
         test_log=${NIC_LOG_FOLDER}/server.log
 fi
 
+if ! [[ -f $test_log ]];then
+        touch ${test_log}
+fi
 
 echo $CUSTOMER_PFT_TEST | tee -a ${test_log}
 echo $SERVERS | tee -a ${test_log}
