@@ -32,14 +32,9 @@
 PACKAGE="kernel"
 
 source /etc/os-release || exit 1
-source env.sh || exit 1
-source lib/lib_nc_sync.sh || exit 1
-source lib/lib_utils.sh || exit 1 
-source /usr/share/beakerlib/beakerlib.sh || exit 1
-
 SYSTEM_VERSION_ID=`echo $VERSION_ID | tr -d '.'`
 
-if [[ CUSTOMER_PFT_TEST == "yes" ]]
+if [[ $CUSTOMER_PFT_TEST == "yes" ]]
 then
 	CASE_PATH=${CASE_PATH:-"$(dirname $(readlink -f $0))"}
 	yum -y install wget git gcc bridge-utils bc lsof nmap-ncat expect tcpdump beakerlib
@@ -53,6 +48,10 @@ else
 	CASE_PATH=${CASE_PATH:-"/mnt/tests//kernel/networking/vnic/sriov_dpdk_pft"}
 fi
 
+source env.sh || exit 1
+source lib/lib_nc_sync.sh || exit 1
+source lib/lib_utils.sh || exit 1
+source /usr/share/beakerlib/beakerlib.sh || exit 1
 source /usr/share/beakerlib/beakerlib.sh || exit 1
 
 add_repo_rhel7()

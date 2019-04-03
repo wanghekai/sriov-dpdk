@@ -82,6 +82,7 @@ DPDK_VERSION=18.11-2
 # NO NEED TO CHANGE BELOW THIS LINE
 #
 # Run test automatically from here
+
 source $CASE_PATH/lib/lib_nc_sync.sh
 source $CASE_PATH/lib/lib_utils.sh
 export PATH=$PATH:$CASE_PATH
