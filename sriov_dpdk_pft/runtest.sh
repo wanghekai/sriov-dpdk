@@ -161,7 +161,7 @@ install_package()
 	done
 
 	#for qemu bug that can not start qemu
-	if (( $SYSTEM_VERSION_ID <= 80 ))
+	if (( $SYSTEM_VERSION_ID < 80 ))
 	then
 		echo -e "group = 'hugetlbfs'" >> /etc/libvirt/qemu.conf
 	fi
@@ -503,6 +503,7 @@ guest_start_testpmd()
 	local vf1_bus=$1
 	local vf2_bus=$2
 	local pkt_size=$3
+
     local cmd=(
         {/root/one_gig_hugepages.sh 1}
 		{rpm -ivh  /root/$DPDK_VERSION/dpdk*.rpm}
@@ -514,17 +515,21 @@ guest_start_testpmd()
         {dpdk-devbind -b vfio-pci $vf1_bus}
 		{dpdk-devbind -b vfio-pci $vf2_bus}
         {dpdk-devbind --status}
-            )
+        )
+
     vmsh cmd_set guest30032 "${cmd[*]}"
+
     local q_num=1
-    local guest_dpdk_ver=`echo $GUEST_DPDK_VERSION | awk -F '-' '{print $1}'`
+    local guest_dpdk_ver=`echo $DPDK_VERSION | awk -F '-' '{print $1}' | tr -d '.'`
     local hw_vlan_flag=""
-    if (( $guest_dpdk_ver >= 1811))
+
+    if (( $guest_dpdk_ver >= 1811 ))
     then
         hw_vlan_flag=""
     else
         hw_vlan_flag="--disable-hw-vlan"
     fi
+
     #VMSH_PROMPT1="testpmd>" VMSH_NORESULT=1 VMSH_NOLOGOUT=1 vmsh run_cmd guest30032 "testpmd -l 0,1,2 --legacy-mem --socket-mem 1024 -n 4 -- --forward-mode=io --port-topology=chained ${hw_vlan_flag} --disable-rss -i --rxq=${q_num} --txq=${q_num} --rxd=256 --txd=256 --nb-cores=2 --max-pkt-len=9600 --auto-start"
 	VMSH_PROMPT1="testpmd>" VMSH_NORESULT=1 VMSH_NOLOGOUT=1 vmsh run_cmd guest30032 "testpmd -l 0,1,2 --legacy-mem --socket-mem 1024 -n 4 -- --forward-mode=io  ${hw_vlan_flag} --disable-rss -i --rxq=${q_num} --txq=${q_num} --rxd=256 --txd=256 --nb-cores=2  --max-pkt-len=${pkt_size} --auto-start"
 }
@@ -542,14 +547,20 @@ update_ssh_trust()
 }
 
 clear_dpdk_interface()
-{
-    local bus_list=`dpdk-devbind -s | grep  -E drv=vfio-pci\|drv=igb | awk '{print $1}'`
-    for i in $bus_list
-    do
-        kernel_driver=`lspci -s $i -v | grep Kernel  | grep modules  | awk '{print $NF}'`
-        dpdk-devbind -b $kernel_driver $i
-    done
-    rlRun "dpdk-devbind -s "
+{	
+	rlLog "Clear dpdk binded interface from vfio-pci driver to kernel driver"
+	if rpm -qa | grep dpdk-tools
+    then
+		dpdk-devbind -s
+		echo "*******************************************************************"
+		local bus_list=`dpdk-devbind -s | grep  -E drv=vfio-pci\|drv=igb | awk '{print $1}'`
+		for i in $bus_list
+		do
+			kernel_driver=`lspci -s $i -v | grep Kernel  | grep modules  | awk '{print $NF}'`
+			dpdk-devbind -b $kernel_driver $i
+		done
+		rlRun "dpdk-devbind -s "
+	fi
     return 0
 }
 
@@ -558,8 +569,9 @@ clear_env()
     virsh destroy guest30032
     virsh undefine guest30032
     rlRun clear_trex
-    rlRun -l "clear_dpdk_interface"
-    rlRun -l "clear_hugepage"
+    rlRun clear_dpdk_interface
+    rlRun clear_hugepage
+
     if i_am_server; then
         local nic1_name=`get_nic_name_from_mac $SERVER_NIC1_MAC`
         local nic2_name=`get_nic_name_from_mac $SERVER_NIC2_MAC`
@@ -650,7 +662,7 @@ install_trex_and_start()
 clear_hugepage()
 {
     local hugepage_dir=`mount -l | grep hugetlbfs | awk '{print $3}'`
-    rlRun -l "rm -rf $hugepage_dir/*"
+    rlRun "rm -rf $hugepage_dir/*"
     return 0
 }
 
@@ -1021,6 +1033,7 @@ sriov_test_vmvf_remote()
 	local vf_name=""
 
 		if i_am_server;then
+		set -x
 		#set link up
 		server_host_link_up $pkt_size
 
@@ -1091,6 +1104,7 @@ sriov_test_vmvf_remote()
 		pkill -f -x -9 'tail -f /dev/null'
 		pkill testpmd
 		sync_set client SERVER_TEST_FINISHED
+		set +x
 
 	else
 		#set client side link up 

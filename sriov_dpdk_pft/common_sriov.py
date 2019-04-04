@@ -174,8 +174,8 @@ class COMMON_SRIOV(sriov.SRIOV):
             </vlan>
         </interface>
         """.format(sp_vf_domain, sp_vf_bus, sp_vf_slot, sp_vf_func, mac, vlan)
+        #print(config_info)
         import xml.etree.ElementTree as et
-        et._serialize_text
         conf_obj=et.fromstring(config_info)
         if not mac:
             for i in conf_obj:
@@ -190,7 +190,9 @@ class COMMON_SRIOV(sriov.SRIOV):
         conf_xml_file.write(et.tostring(conf_obj))
 
         sh_cmd=shell("virsh attach-device {} {}".format(vm, vf_node_file))
+        #print(sh_cmd)
         if sh_cmd.code != 0:
+            #print(sh_cmd.code)
             return sh_cmd.code
 
     @staticmethod
