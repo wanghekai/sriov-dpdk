@@ -1155,40 +1155,51 @@ then
 fi
 rlPhaseEnd
 
+if grep sriov_test_testpmd_loopback <<< "${ALL_CASE_LIST[@]}"
+then
+	rlPhaseStartTest "sriov test testpmd loopback mode"
+	rlRun sriov_test_testpmd_loopback
+	rlPhaseEnd
 
-rlPhaseStartTest "sriov test testpmd loopback mode"
-rlRun sriov_test_testpmd_loopback
-rlPhaseEnd
+	rlPhaseStartTest "clear env "
+	rlRun clear_env
+	rlPhaseEnd
+fi
 
+if grep sriov_test_pf_all <<< "${ALL_CASE_LIST[@]}"
+then
+	rlPhaseStartTest "sriov_test_pf_remote"
+	rlRun sriov_test_pf_all
+	rlPhaseEnd
 
-rlPhaseStartTest "clear env "
-rlRun clear_env
-rlPhaseEnd
+	rlPhaseStartTest "clear env "
+	rlRun clear_env
+	rlPhaseEnd
+fi
 
-rlPhaseStartTest "sriov_test_pf_remote"
-rlRun sriov_test_pf_all
-rlPhaseEnd
+if grep sriov_test_vf_all <<< "${ALL_CASE_LIST[@]}"
+then
+	rlPhaseStartTest "sriov_test_vf_remote"
+	rlRun sriov_test_vf_all
+	rlPhaseEnd
 
-rlPhaseStartTest "clear env "
-rlRun clear_env
-rlPhaseEnd
+	rlPhaseStartTest "clear env "
+	rlRun clear_env
+	rlPhaseEnd
+fi
 
+if grep sriov_test_vmvf_all <<< "${ALL_CASE_LIST[@]}"
+then
+	rlPhaseStartTest "sriov_test_vmvf_remote"
+	rlRun sriov_test_vmvf_all
+	rlPhaseEnd
 
-rlPhaseStartTest "sriov_test_vf_remote"
-rlRun sriov_test_vf_all
-rlPhaseEnd
+	rlPhaseStartTest "clear env "
+	rlRun clear_env
+	rlPhaseEnd
 
-rlPhaseStartTest "clear env "
-rlRun clear_env
-rlPhaseEnd
+fi
 
-rlPhaseStartTest "sriov_test_vmvf_remote"
-rlRun sriov_test_vmvf_all
-rlPhaseEnd
-
-rlPhaseStartTest "clear env "
-rlRun clear_env
-rlPhaseEnd
 
 rlJournalPrintText
 rlJournalEnd

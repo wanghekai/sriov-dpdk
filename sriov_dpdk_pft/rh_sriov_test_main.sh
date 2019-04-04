@@ -78,6 +78,13 @@ DPDK_URL="http://download.eng.bos.redhat.com/brewroot/packages/dpdk/18.11/2.el8/
 DPDK_TOOL_URL="http://download.eng.bos.redhat.com/brewroot/packages/dpdk/18.11/2.el8/x86_64/dpdk-tools-18.11-2.el8.x86_64.rpm"
 DPDK_VERSION=18.11-2
 
+ALL_CASE_LIST=(
+sriov_test_testpmd_loopback
+sriov_test_pf_all
+sriov_test_vf_all
+sriov_test_vmvf_all
+)
+
 ###############################################################
 # NO NEED TO CHANGE BELOW THIS LINE
 #
