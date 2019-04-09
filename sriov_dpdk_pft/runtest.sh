@@ -50,7 +50,7 @@ then
 		wget
 		git
 		gcc
-		
+		make
 		bc
 		lsof
 		nmap-ncat
@@ -70,6 +70,7 @@ then
 	#install beakerlib
 	if ! [[ -f /usr/share/beakerlib/beakerlib.sh ]]
 	then
+		rm -rf beakerlib
 		git clone https://github.com/beakerlib/beakerlib
 		pushd beakerlib
 		make
