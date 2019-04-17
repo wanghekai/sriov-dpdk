@@ -111,10 +111,18 @@ install_package()
 		yum -y install qemu-kvm-common-rhev
 		yum -y install qemu-kvm-rhev 
 		yum -y install qemu-kvm-tools-rhev
+		yum -y install yum-utils
+		yum -y install python36-devel
+		yum -y install python3-setuptools
+
 	else
 		yum install -y qemu-img 
 		yum -y install qemu-kvm 
 		yum -y install platform-python-devel
+		yum -y install dnf-utils
+		yum -y install python36-devel
+		yum -y install python3-setuptools
+
     fi
 
 	local all_pack=(
@@ -122,7 +130,6 @@ install_package()
 		tcpdump 
 		python36
 		ethtool 
-		yum-utils 
 		scl-utils 
 		libnl3-devel
 		python36-devel
@@ -139,21 +146,18 @@ install_package()
 		virt-install 
 		virt-manager 
 		virt-viewer
-		python
+		python36
 		czmq-devel
 		libguestfs-tools
 		ethtool
 		libvirt-devel
-		libvirt-python
+		python3-libvirt
 		python3-lxml
 		emacs 
 		gcc 
 		git 
 		lshw 
 		pciutils 
-		python-devel 
-		python-setuptools 
-		python-pip
 	)
 
 	for pack in "${all_pack[@]}"
@@ -215,6 +219,7 @@ init_python_env()
 	pip install plumbum
 	pip install ethtool
 	pip install shell
+	pip install libvirt-python
 }
 
 get_pmd_masks()
