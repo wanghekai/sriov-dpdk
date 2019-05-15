@@ -204,6 +204,7 @@ init_python_env()
 		python3 -m venv ${CASE_PATH}/venv
 	else
 		python36 -m venv ${CASE_PATH}/venv
+		python3.6 -m venv ${CASE_PATH}/venv
 	fi
 
     source venv/bin/activate
@@ -757,8 +758,22 @@ host_start_testpmd()
 	# done
 	#here we need config with numa 
 	#--max-pkt-len=9600 \
+
+	local numa_node=0
+	local socket_mem=""
+	if i_am_server;then
+		numa_node=$SERVER_NUMA
+    else
+		numa_node=$CLIENT_NUMA
+    fi
+	for i in `seq 0 $numa_node`
+	do
+		socket_mem="1024,"$socket_mem
+	done
+	socket_mem=${socket_mem%?}
+
 	local cpu_info=`tail -n 1 /etc/tuned/cpu-partitioning-variables.conf | awk -F '=' '{print $NF}' | cut -d ',' -f 1-3`
-	tail -f /dev/null | testpmd -l $cpu_info -w $bus1 -w $bus2 --socket-mem 1024 --legacy-mem -n 4  -- -i \
+	tail -f /dev/null | testpmd -l $cpu_info -w $bus1 -w $bus2 --socket-mem ${socket_mem} --legacy-mem -n 4  -- -i \
 	--forward-mode=${forward_mode} \
 	${hw_vlan_flag} \
 	--disable-rss \
