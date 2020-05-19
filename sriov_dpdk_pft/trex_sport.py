@@ -67,7 +67,7 @@ class TrexTest(object):
         else:
             self.base_pkt = l2/IP(src="192.168.100.10", dst="192.168.100.20")/UDP(dport=12, sport=1025)
 
-        self.pad = max(0, self.pkt_size - len(self.base_pkt)) * 'x'
+        self.pad = max( 0, self.pkt_size - len(self.base_pkt) - 4 ) * 'x'
 
         return  STLStream(isg=10.0,
                         packet=STLPktBuilder(pkt=self.base_pkt/self.pad),
@@ -86,7 +86,7 @@ class TrexTest(object):
 
     def test_stream_create(self,src_mac,dst_mac):
         l2 = Ether(dst=dst_mac,src=src_mac)
-        pad = max(0, self.pkt_size - len(l2)) * 'x'
+        pad = max(0, self.pkt_size - len(l2) - 4 ) * 'x'
         return STLStream(isg=10.0,
                 packet=STLPktBuilder(pkt=l2 / pad),
                 #flow_stats=STLFlowStats(pg_id=1),
